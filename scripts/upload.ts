@@ -19,12 +19,23 @@ async function upload() {
   const api = await ScreepsAPI.fromConfig(SERVER);
   console.log("Connected as:", (await api.me()).username);
 
-  const files = readdirSync("dist").filter((f) => f.endsWith(".js"));
+  const files = readdirSync("dist").filter(
+    (f) => f.endsWith(".js") || f.endsWith(".map"),
+  );
   const code: Record<string, string> = {};
 
   for (const file of files) {
-    const key = file.replace(/\.js$/, "");
-    code[key] = readFileSync(join("dist", file), "utf8");
+    let key: string;
+    let data = readFileSync(join("dist", file), "utf8");
+    if (file.endsWith(".map")) {
+      key = file;
+      data = `module.exports = ${data}`;
+    } else if (file.endsWith(".js")) {
+      key = file.replace(/\.js$/, "");
+    } else {
+      continue;
+    }
+    code[key] = data;
   }
 
   console.log("Uploading to Screeps...");

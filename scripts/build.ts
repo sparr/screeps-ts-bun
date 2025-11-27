@@ -20,8 +20,9 @@ await Bun.build({
   target: "node",
   minify: process.env.DRY_RUN !== "true",
   format: "cjs",
-  sourcemap: "inline",
+  sourcemap: "external",
   splitting: false,
+  external: ["main.js.map"],
 });
 
 console.log("Build finished!");
